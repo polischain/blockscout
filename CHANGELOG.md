@@ -3,8 +3,13 @@
 ### Features
 
 ### Fixes
+- [#4456](https://github.com/blockscout/blockscout/pull/4456) - URL encoding for NFT media files URLs
+- [#4453](https://github.com/blockscout/blockscout/pull/4453) - Unescape characters for string output type in the contract response
+- [#4401](https://github.com/blockscout/blockscout/pull/4401) - Fix displaying of token holders with the same amount
 
 ### Chore
+- [#4444](https://github.com/blockscout/blockscout/pull/4444) - Main page performance cumulative update
+- [#4439](https://github.com/blockscout/blockscout/pull/4439), - [#4465](https://github.com/blockscout/blockscout/pull/4465) - Fix revert response in contract's output
 
 
 ## 3.7.2-beta
