@@ -58,8 +58,8 @@ export const initialState = {
   stakingErrorShown: false
 }
 
-// 100 - id of xDai network, 101 - id of xDai test network
-export const allowedNetworkIds = [100, 101]
+// 333888 - id of Sparta network, 333999 - id of Athene network
+export const allowedNetworkIds = [333888, 333999]
 
 export function reducer (state = initialState, action) {
   switch (action.type) {

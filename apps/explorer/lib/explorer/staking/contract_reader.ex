@@ -33,8 +33,6 @@ defmodule Explorer.Staking.ContractReader do
       staking_allowed: {:staking, "f4942501", [], block_number},
       # 74bdb372 = keccak256(lastChangeBlock())
       staking_last_change_block: {:staking, "74bdb372", [], block_number},
-      # 2d21d217 = keccak256(erc677TokenContract())
-      token_contract_address: {:staking, "2d21d217", [], block_number},
       # 704189ca = keccak256(unremovableValidator())
       unremovable_validator: {:validator_set, "704189ca", [], block_number},
       # b7ab4db5 = keccak256(getValidators())

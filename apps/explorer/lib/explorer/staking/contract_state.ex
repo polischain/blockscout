@@ -14,7 +14,6 @@ defmodule Explorer.Staking.ContractState do
   alias Explorer.Chain.Events.{Publisher, Subscriber}
   alias Explorer.SmartContract.Reader
   alias Explorer.Staking.{ContractReader, StakeSnapshotting}
-  alias Explorer.Token.{BalanceReader, MetadataRetriever}
 
   @table_name __MODULE__
   @table_keys [
@@ -42,8 +41,6 @@ defmodule Explorer.Staking.ContractState do
     :validators_length
   ]
 
-  # token renewal frequency in blocks
-  @token_renew_frequency 10
 
   defstruct [
     :eth_blocknumber_pull_interval,
@@ -83,7 +80,6 @@ defmodule Explorer.Staking.ContractState do
     staking_abi = abi("StakingAuRa")
     validator_set_abi = abi("ValidatorSetAuRa")
     block_reward_abi = abi("BlockRewardAuRa")
-    token_abi = abi("Token")
 
     module_env = Application.get_env(:explorer, __MODULE__)
 
@@ -94,18 +90,14 @@ defmodule Explorer.Staking.ContractState do
     eth_subscribe_max_delay = String.to_integer(module_env[:eth_subscribe_max_delay])
 
     staking_contract_address = module_env[:staking_contract_address]
-    # 2d21d217 = keccak256(erc677TokenContract())
-    erc_677_token_contract_signature = "2d21d217"
 
     # dfc8bf4e = keccak256(validatorSetContract())
     validator_set_contract_signature = "dfc8bf4e"
 
     %{
-      "2d21d217" => {:ok, [token_contract_address]},
       "dfc8bf4e" => {:ok, [validator_set_contract_address]}
     } =
       Reader.query_contract(staking_contract_address, staking_abi, %{
-        "#{erc_677_token_contract_signature}" => [],
         "#{validator_set_contract_signature}" => []
       })
 
@@ -139,8 +131,6 @@ defmodule Explorer.Staking.ContractState do
       snapshotted_epoch_number: -1,
       snapshotting_scheduled: false,
       staking_contract: %{abi: staking_abi, address: staking_contract_address},
-      token_contract: %{abi: token_abi, address: token_contract_address},
-      token: get_token(token_contract_address),
       validator_set_contract: %{abi: validator_set_abi, address: validator_set_contract_address}
     )
 
@@ -255,7 +245,6 @@ defmodule Explorer.Staking.ContractState do
       # or we are starting Blockscout server, the BlockRewardAuRa contract balance
       # could increase before (without Mint/Transfer events),
       # so we need to update its balance in database
-      update_block_reward_balance(block_number)
     end
 
     # we should update database as something changed in contracts state
@@ -556,24 +545,6 @@ defmodule Explorer.Staking.ContractState do
     end
   end
 
-  defp get_settings(global_responses, state, block_number) do
-    validator_min_reward_percent =
-      get_validator_min_reward_percent(global_responses.epoch_number, block_number, state.contracts, state.abi)
-
-    base_settings = get_base_settings(global_responses, validator_min_reward_percent)
-
-    update_token =
-      get(:token) == nil or
-        get(:token_contract).address != global_responses.token_contract_address or
-        rem(block_number, @token_renew_frequency) == 0
-
-    if update_token do
-      Enum.concat(base_settings, token: get_token(global_responses.token_contract_address))
-    else
-      base_settings
-    end
-  end
-
   defp set_settings(global_responses, state, block_number, last_change_block, current_pool_rewards) do
     pool_rewards =
       global_responses.validators
@@ -781,6 +752,15 @@ defmodule Explorer.Staking.ContractState do
     end)
   end
 
+  defp get_settings(global_responses, state, block_number) do
+    validator_min_reward_percent =
+      get_validator_min_reward_percent(global_responses.epoch_number, block_number, state.contracts, state.abi)
+
+    base_settings = get_base_settings(global_responses, validator_min_reward_percent)
+
+    base_settings
+  end
+
   defp get_validator_min_reward_percent(epoch_number, block_number, contracts, abi) do
     ContractReader.perform_requests(
       ContractReader.validator_min_reward_percent_request(epoch_number, block_number),
@@ -792,7 +772,6 @@ defmodule Explorer.Staking.ContractState do
   defp get_base_settings(global_responses, validator_min_reward_percent) do
     global_responses
     |> Map.take([
-      :token_contract_address,
       :max_candidates,
       :min_candidate_stake,
       :min_delegator_stake,
@@ -964,64 +943,6 @@ defmodule Explorer.Staking.ContractState do
     end)
   end
 
-  defp update_block_reward_balance(block_number) do
-    # update ERC balance of the BlockReward contract
-    token = get(:token)
-
-    if token != nil do
-      block_reward_address = address_string_to_bytes(get(:block_reward_contract).address)
-      token_contract_address_hash = token.contract_address_hash
-
-      block_reward_balance =
-        BalanceReader.get_balances_of([
-          %{
-            token_contract_address_hash: token_contract_address_hash,
-            address_hash: block_reward_address.bytes,
-            block_number: block_number
-          }
-        ])[:ok]
-
-      token_params =
-        token_contract_address_hash
-        |> MetadataRetriever.get_functions_of()
-        |> Map.merge(%{
-          contract_address_hash: token_contract_address_hash,
-          type: "ERC-20"
-        })
-
-      import_result =
-        Chain.import(%{
-          addresses: %{params: [%{hash: block_reward_address.bytes}], on_conflict: :nothing},
-          address_current_token_balances: %{
-            params: [
-              %{
-                address_hash: block_reward_address.bytes,
-                token_contract_address_hash: token_contract_address_hash,
-                block_number: block_number,
-                value: block_reward_balance,
-                value_fetched_at: DateTime.utc_now()
-              }
-            ]
-          },
-          tokens: %{params: [token_params]}
-        })
-
-      with {:ok, _} <- import_result,
-           do:
-             Publisher.broadcast(
-               [
-                 {
-                   :address_token_balances,
-                   [
-                     %{address_hash: block_reward_address.struct, block_number: block_number}
-                   ]
-                 }
-               ],
-               :on_demand
-             )
-    end
-  end
-
   defp do_start_snapshotting(
          epoch_very_beginning,
          pool_staking_responses,
@@ -1053,72 +974,6 @@ defmodule Explorer.Staking.ContractState do
       # the last block of the previous staking epoch
       global_responses.epoch_start_block - 1
     ])
-  end
-
-  defp get_token(address) do
-    if address == "0x0000000000000000000000000000000000000000" do
-      # the token address is empty, so return nil
-      nil
-    else
-      case Chain.string_to_address_hash(address) do
-        {:ok, address_hash} ->
-          # the token address has correct format, so try to read the token
-          # from DB or from its contract
-          case Chain.token_from_address_hash(address_hash) do
-            {:ok, token} ->
-              # the token is read from DB
-              token
-
-            _ ->
-              fetch_token(address, address_hash)
-          end
-
-        _ ->
-          # the token address has incorrect format
-          nil
-      end
-    end
-  end
-
-  defp fetch_token(address, address_hash) do
-    # the token doesn't exist in DB, so try
-    # to read it from a contract and then write to DB.
-    # Since the Staking DApp doesn't use the token fields
-    # which dinamically change (such as totalSupply),
-    # we don't pass the current block_number to the RPC request
-    token_functions = MetadataRetriever.get_functions_of(address)
-
-    if map_size(token_functions) > 0 do
-      # the token is successfully read from its contract
-      token_params =
-        Map.merge(token_functions, %{
-          contract_address_hash: address,
-          type: "ERC-20"
-        })
-
-      # try to write the token info to DB
-      import_result =
-        Chain.import(%{
-          addresses: %{params: [%{hash: address}], on_conflict: :nothing},
-          tokens: %{params: [token_params]}
-        })
-
-      case import_result do
-        {:ok, _} ->
-          # the token is successfully added to DB, so return it as a result
-          case Chain.token_from_address_hash(address_hash) do
-            {:ok, token} -> token
-            _ -> nil
-          end
-
-        _ ->
-          # cannot write the token info to DB
-          nil
-      end
-    else
-      # cannot read the token info from its contract
-      nil
-    end
   end
 
   defp is_valid_string?(str) do
