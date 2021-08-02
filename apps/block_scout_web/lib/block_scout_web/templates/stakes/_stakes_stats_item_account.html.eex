@@ -17,9 +17,9 @@
   </span>
   <span class="stakes-top-stats-label">
     <%
-      balance = format_token_amount(@account[:balance], @token, digits: 5, no_tooltip: true, symbol: true)
-      balance_full = if @account[:balance] do
-        "#{from_wei(@account[:balance], @token)} #{@token.symbol}"
+      balance = from_wei(@account[:balance.value])
+      balance_full = if @account[:balance].value do
+        "#{format(@account[:balance].value)}"
       else
         "-"
       end

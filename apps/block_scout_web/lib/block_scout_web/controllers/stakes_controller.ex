@@ -34,15 +34,13 @@ defmodule BlockScoutWeb.StakesController do
           }
       end
 
-    token = ContractState.get(:token, %Token{})
-
     account =
       if account_address = conn.assigns[:account] do
         account_address
         |> Chain.get_total_staked_and_ordered()
         |> Map.merge(%{
           address: account_address,
-          balance: Chain.fetch_last_token_balance(account_address, token.contract_address_hash),
+          balance: Chain.get_coin_balance(account_address, BlockNumber.get_max()),
           pool: Chain.staking_pool(account_address),
           pool_id: conn.assigns[:pool_id]
         })
@@ -58,8 +56,7 @@ defmodule BlockScoutWeb.StakesController do
       block_number: staking_data.block_number,
       candidates_limit_reached: staking_data.active_pools_length >= staking_data.max_candidates,
       epoch_end_in: epoch_end_in,
-      epoch_number: staking_data.epoch_number,
-      token: token
+      epoch_number: staking_data.epoch_number
     )
   end
 
@@ -103,7 +100,6 @@ defmodule BlockScoutWeb.StakesController do
           end
 
         staking_epoch_duration = ContractState.staking_epoch_duration()
-        token = ContractState.get(:token, %Token{})
         epoch_number = ContractState.get(:epoch_number, 0)
         staking_allowed = ContractState.get(:staking_allowed, false)
         pool_rewards = ContractState.get(:pool_rewards, %{})
@@ -138,7 +134,6 @@ defmodule BlockScoutWeb.StakesController do
             View.render_to_string(
               StakesView,
               "_rows.html",
-              token: token,
               pool: pool,
               delegator: delegator,
               index: index,
@@ -166,11 +161,9 @@ defmodule BlockScoutWeb.StakesController do
   # this is called when the page is loaded for the first time
   # or when it is reloaded by a user
   defp render_template(filter, conn, _) do
-    token = ContractState.get(:token, %Token{})
 
     render(conn, "index.html",
       top: render_top(conn),
-      token: token,
       pools_type: filter,
       current_path: current_path(conn),
       average_block_time: AverageBlockTime.average_block_time(),

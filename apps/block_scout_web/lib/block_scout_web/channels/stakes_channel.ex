@@ -75,7 +75,6 @@ defmodule BlockScoutWeb.StakesChannel do
             epoch_number: ContractState.get(:epoch_number, 0),
             epoch_end_block: ContractState.get(:epoch_end_block, 0),
             staking_allowed: ContractState.get(:staking_allowed, false),
-            staking_token_defined: ContractState.get(:token, nil) != nil,
             validator_set_apply_block: ContractState.get(:validator_set_apply_block, 0)
           }
       end
@@ -89,14 +88,12 @@ defmodule BlockScoutWeb.StakesChannel do
     pool = Chain.staking_pool(staking_address)
     delegator = socket.assigns[:account] && Chain.staking_pool_delegator(staking_address, socket.assigns.account)
     average_block_time = AverageBlockTime.average_block_time()
-    token = ContractState.get(:token)
 
     html =
       View.render_to_string(StakesView, "_stakes_modal_pool_info.html",
         validator: pool,
         delegator: delegator,
-        average_block_time: average_block_time,
-        token: token
+        average_block_time: average_block_time
       )
 
     {:reply, {:ok, %{html: html}}, socket}
@@ -107,7 +104,6 @@ defmodule BlockScoutWeb.StakesChannel do
     pool = Chain.staking_pool(pool_staking_address)
     pool_rewards = ContractState.get(:pool_rewards, %{})
     calc_apy_enabled = ContractState.calc_apy_enabled?()
-    token = ContractState.get(:token)
     validator_min_reward_percent = ContractState.get(:validator_min_reward_percent)
     show_snapshotted_data = ContractState.show_snapshotted_data(pool.is_validator)
     staking_epoch_duration = ContractState.staking_epoch_duration()
@@ -159,7 +155,6 @@ defmodule BlockScoutWeb.StakesChannel do
         pool: pool,
         conn: socket,
         stakers: stakers,
-        token: token,
         show_snapshotted_data: show_snapshotted_data,
         validator_min_reward_percent: validator_min_reward_percent
       )
@@ -169,15 +164,12 @@ defmodule BlockScoutWeb.StakesChannel do
 
   def handle_in("render_become_candidate", _, socket) do
     min_candidate_stake = Decimal.new(ContractState.get(:min_candidate_stake))
-    token = ContractState.get(:token)
-    balance = Chain.fetch_last_token_balance(socket.assigns.account, token.contract_address_hash)
+    balance = Chain.get_coin_balance(socket.assigns.account, BlockNumber.get_max())
 
     html =
       View.render_to_string(StakesView, "_stakes_modal_become_candidate.html",
         min_candidate_stake: min_candidate_stake,
         balance: balance,
-        coin: get_coin(),
-        token: token
       )
 
     result = %{
@@ -192,8 +184,7 @@ defmodule BlockScoutWeb.StakesChannel do
   def handle_in("render_make_stake", %{"address" => staking_address}, socket) do
     staking_pool = Chain.staking_pool(staking_address)
     delegator = Chain.staking_pool_delegator(staking_address, socket.assigns.account)
-    token = ContractState.get(:token)
-    balance = Chain.fetch_last_token_balance(socket.assigns.account, token.contract_address_hash)
+    balance = Chain.get_coin_balance(socket.assigns.account, BlockNumber.get_max())
 
     min_stake =
       Decimal.new(
@@ -226,9 +217,8 @@ defmodule BlockScoutWeb.StakesChannel do
         balance: balance,
         delegator_staked: delegator_staked,
         min_stake: min_stake,
-        pool: pool,
-        token: token
-      )
+        pool: pool
+     )
 
     result = %{
       html: html,
@@ -249,11 +239,9 @@ defmodule BlockScoutWeb.StakesChannel do
     pools = Chain.staking_pools(:active, :all)
     delegator_from = Chain.staking_pool_delegator(from_address, socket.assigns.account)
     delegator_to = to_address && Chain.staking_pool_delegator(to_address, socket.assigns.account)
-    token = ContractState.get(:token)
 
     html =
       View.render_to_string(StakesView, "_stakes_modal_move.html",
-        token: token,
         pools: pools,
         pool_from: pool_from,
         pool_to: pool_to,
@@ -307,7 +295,6 @@ defmodule BlockScoutWeb.StakesChannel do
 
   def handle_in("render_withdraw_stake", %{"address" => staking_address}, socket) do
     pool = Chain.staking_pool(staking_address)
-    token = ContractState.get(:token)
     delegator = Chain.staking_pool_delegator(staking_address, socket.assigns.account)
 
     min_stake =
@@ -319,7 +306,6 @@ defmodule BlockScoutWeb.StakesChannel do
 
     html =
       View.render_to_string(StakesView, "_stakes_modal_withdraw.html",
-        token: token,
         delegator: delegator,
         pool: pool
       )
@@ -400,12 +386,10 @@ defmodule BlockScoutWeb.StakesChannel do
 
   def handle_in("render_claim_withdrawal", %{"address" => staking_address}, socket) do
     pool = Chain.staking_pool(staking_address)
-    token = ContractState.get(:token)
     delegator = Chain.staking_pool_delegator(staking_address, socket.assigns.account)
 
     html =
       View.render_to_string(StakesView, "_stakes_modal_claim_withdrawal.html",
-        token: token,
         delegator: delegator,
         pool: pool
       )
@@ -467,7 +451,6 @@ defmodule BlockScoutWeb.StakesChannel do
       epoch_number: data.epoch_number,
       epoch_end_block: epoch_end_block,
       staking_allowed: data.staking_allowed,
-      staking_token_defined: data.staking_token_defined,
       validator_set_apply_block: data.validator_set_apply_block,
       top_html: StakesController.render_top(socket)
     })
@@ -563,10 +546,8 @@ defmodule BlockScoutWeb.StakesChannel do
         View.render_to_string(
           StakesView,
           "_stakes_modal_claim_reward_content.html",
-          coin: get_coin(),
           error: error,
-          pools: pools,
-          token: ContractState.get(:token)
+          pools: pools
         )
 
       push(socket, "claim_reward_pools", %{
@@ -592,7 +573,7 @@ defmodule BlockScoutWeb.StakesChannel do
         pools_amounts
         |> Enum.map(fn {_, amounts} -> amounts end)
         |> Enum.zip(pools)
-        |> Enum.filter(fn {amounts, _} -> amounts.token_reward_sum > 0 || amounts.native_reward_sum > 0 end)
+        |> Enum.filter(fn {amounts, _} -> amounts.native_reward_sum > 0 end)
         |> Enum.map(fn {amounts, pool_staking_address} ->
           responses =
             pool_staking_address
@@ -718,7 +699,7 @@ defmodule BlockScoutWeb.StakesChannel do
             {nil, amounts}
 
           {:error, reason} ->
-            {error_reason_to_string(reason), %{token_reward_sum: 0, native_reward_sum: 0}}
+            {error_reason_to_string(reason), %{native_reward_sum: 0}}
         end
 
       {error, gas_limit} =
@@ -743,19 +724,10 @@ defmodule BlockScoutWeb.StakesChannel do
           {error, 0}
         end
 
-      token = ContractState.get(:token)
-      coin = get_coin()
-
       push(socket, "claim_reward_recalculations", %{
-        token_reward_sum:
-          StakesHelpers.format_token_amount(amounts.token_reward_sum, token,
-            digits: token.decimals,
-            ellipsize: false,
-            symbol: false
-          ),
         native_reward_sum:
           StakesHelpers.format_token_amount(amounts.native_reward_sum, coin,
-            digits: coin.decimals,
+            digits: 18,
             ellipsize: false,
             symbol: false
           ),
@@ -847,15 +819,11 @@ defmodule BlockScoutWeb.StakesChannel do
     if socket.assigns[:contracts_sent] do
       socket
     else
-      token = ContractState.get(:token)
 
       push(socket, "contracts", %{
         staking_contract: ContractState.get(:staking_contract),
         block_reward_contract: ContractState.get(:block_reward_contract),
-        validator_set_contract: ContractState.get(:validator_set_contract),
-        token_contract: ContractState.get(:token_contract),
-        token_decimals: to_string(token.decimals),
-        token_symbol: token.symbol
+        validator_set_contract: ContractState.get(:validator_set_contract)
       })
 
       assign(socket, :contracts_sent, true)
@@ -865,10 +833,6 @@ defmodule BlockScoutWeb.StakesChannel do
   defp claim_reward_long_op_key(staker) do
     staker = if staker == nil, do: "", else: staker
     Atom.to_string(@claim_reward_long_op) <> "_" <> staker
-  end
-
-  defp get_coin do
-    %Token{symbol: Explorer.coin(), decimals: Decimal.new(18)}
   end
 
   defp handle_in_render_claim_reward_result(
