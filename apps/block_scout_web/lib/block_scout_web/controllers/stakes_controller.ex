@@ -3,7 +3,7 @@ defmodule BlockScoutWeb.StakesController do
 
   alias BlockScoutWeb.StakesView
   alias Explorer.Chain
-  alias Explorer.Chain.{Cache.BlockNumber, Hash, Token}
+  alias Explorer.Chain.{Cache.BlockNumber, Hash}
   alias Explorer.Counters.AverageBlockTime
   alias Explorer.Staking.ContractState
   alias Phoenix.View
@@ -40,7 +40,7 @@ defmodule BlockScoutWeb.StakesController do
         |> Chain.get_total_staked_and_ordered()
         |> Map.merge(%{
           address: account_address,
-          balance: Chain.get_coin_balance(account_address, BlockNumber.get_max()),
+          balance: Chain.Wei.to(Chain.get_coin_balance(account_address, BlockNumber.get_max()).value, :wei),
           pool: Chain.staking_pool(account_address),
           pool_id: conn.assigns[:pool_id]
         })

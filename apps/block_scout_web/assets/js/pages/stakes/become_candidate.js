@@ -78,7 +78,6 @@ async function becomeCandidate ($modal, store, msg) {
   const state = store.getState()
   const web3 = state.web3
   const stakingContract = state.stakingContract
-  const tokenContract = state.tokenContract
   const decimals = state.tokenDecimals
   const stake = new BigNumber($modal.find('[candidate-stake]').val().replace(',', '.').trim()).shiftedBy(decimals).integerValue()
   const $miningAddressInput = $modal.find('[mining-address]')
@@ -107,8 +106,8 @@ async function becomeCandidate ($modal, store, msg) {
     const poolNameLength = web3.utils.stripHexPrefix(web3.utils.padLeft(web3.utils.numberToHex(poolNameHex.length / 2), 2, '0'))
     const poolDescriptionHex = web3.utils.stripHexPrefix(web3.utils.utf8ToHex(poolDescription))
     const poolDescriptionLength = web3.utils.stripHexPrefix(web3.utils.padLeft(web3.utils.numberToHex(poolDescriptionHex.length / 2), 4, '0'))
+    // TODO Make candidate
 
-    makeContractCall(tokenContract.methods.transferAndCall(stakingContract.options.address, stake.toFixed(), `${miningAddress}01${poolNameLength}${poolNameHex}${poolDescriptionLength}${poolDescriptionHex}`), store)
   } catch (err) {
     openErrorModal('Error', err.message)
   }

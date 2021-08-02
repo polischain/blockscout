@@ -41,6 +41,7 @@ defmodule BlockScoutWeb.StakesHelpers do
   def list_title(:active), do: Gettext.dgettext(BlockScoutWeb.Gettext, "default", "Active Pools (Candidates)")
   def list_title(:inactive), do: Gettext.dgettext(BlockScoutWeb.Gettext, "default", "Inactive Pools")
 
+  def from_wei(amount, nil), do: from_wei(amount, %Token{decimals: Decimal.new(18)})
   def from_wei(%Decimal{} = amount, %Token{} = token, to_string \\ true) do
     decimals = if token.decimals, do: Decimal.to_integer(token.decimals), else: 0
 
@@ -58,7 +59,7 @@ defmodule BlockScoutWeb.StakesHelpers do
 
   def format_token_amount(amount, token, options \\ [])
   def format_token_amount(nil, _token, _options), do: "-"
-  def format_token_amount(amount, nil, options), do: format_token_amount(amount, %Token{}, options)
+  def format_token_amount(amount, nil, options), do: format_token_amount(amount, %Token{symbol: "Polis",decimals: Decimal.new(18)}, options)
 
   def format_token_amount(amount, token, options) when is_integer(amount) do
     amount

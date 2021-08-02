@@ -16,7 +16,7 @@ import { openMoveStakeModal } from './stakes/move_stake'
 import { openWithdrawStakeModal } from './stakes/withdraw_stake'
 import { openClaimRewardModal, claimRewardConnectionLost } from './stakes/claim_reward'
 import { openClaimWithdrawalModal } from './stakes/claim_withdrawal'
-import { checkForTokenDefinition, isSupportedNetwork } from './stakes/utils'
+import { isSupportedNetwork } from './stakes/utils'
 import { currentModal, openWarningModal, openErrorModal } from '../lib/modals'
 import constants from './stakes/constants'
 
@@ -47,11 +47,9 @@ export const initialState = {
   refreshInterval: null,
   refreshPageFunc: refreshPageWrapper,
   stakingAllowed: false,
-  stakingTokenDefined: false,
   stakingContract: null,
-  tokenContract: null,
-  tokenDecimals: 0,
-  tokenSymbol: '',
+  tokenDecimals: 18,
+  tokenSymbol: 'Polis',
   validatorSetApplyBlock: 0,
   validatorSetContract: null,
   web3: null,
@@ -112,7 +110,6 @@ export function reducer (state = initialState, action) {
       return Object.assign({}, state, {
         lastEpochNumber: action.lastEpochNumber,
         stakingAllowed: action.stakingAllowed,
-        stakingTokenDefined: action.stakingTokenDefined,
         validatorSetApplyBlock: action.validatorSetApplyBlock
       })
     }
@@ -121,7 +118,6 @@ export function reducer (state = initialState, action) {
         stakingContract: action.stakingContract,
         blockRewardContract: action.blockRewardContract,
         validatorSetContract: action.validatorSetContract,
-        tokenContract: action.tokenContract,
         tokenDecimals: action.tokenDecimals,
         tokenSymbol: action.tokenSymbol
       })
@@ -261,15 +257,12 @@ if ($stakesPage.length) {
       new web3.eth.Contract(msg.block_reward_contract.abi, msg.block_reward_contract.address)
     const validatorSetContract =
       new web3.eth.Contract(msg.validator_set_contract.abi, msg.validator_set_contract.address)
-    const tokenContract =
-      new web3.eth.Contract(msg.token_contract.abi, msg.token_contract.address)
 
     store.dispatch({
       type: 'RECEIVED_CONTRACTS',
       stakingContract,
       blockRewardContract,
       validatorSetContract,
-      tokenContract,
       tokenDecimals: parseInt(msg.token_decimals, 10),
       tokenSymbol: msg.token_symbol
     })
@@ -280,45 +273,31 @@ if ($stakesPage.length) {
 
   $(document.body)
     .on('click', '.js-pool-info', event => {
-      if (checkForTokenDefinition(store)) {
-        openPoolInfoModal(event, store)
-      }
+      openPoolInfoModal(event, store)
     })
     .on('click', '.js-delegators-list', event => {
       openDelegatorsListModal(event, store)
     })
     .on('click', '.js-become-candidate', event => {
-      if (checkForTokenDefinition(store)) {
-        openBecomeCandidateModal(event, store)
-      }
+      openBecomeCandidateModal(event, store)
     })
     .on('click', '.js-remove-pool', () => {
       openRemovePoolModal(store)
     })
     .on('click', '.js-make-stake', event => {
-      if (checkForTokenDefinition(store)) {
-        openMakeStakeModal(event, store)
-      }
+      openMakeStakeModal(event, store)
     })
     .on('click', '.js-move-stake', event => {
-      if (checkForTokenDefinition(store)) {
-        openMoveStakeModal(event, store)
-      }
+      openMoveStakeModal(event, store)
     })
     .on('click', '.js-withdraw-stake', event => {
-      if (checkForTokenDefinition(store)) {
-        openWithdrawStakeModal(event, store)
-      }
+      openWithdrawStakeModal(event, store)
     })
     .on('click', '.js-claim-reward', event => {
-      if (checkForTokenDefinition(store)) {
-        openClaimRewardModal(event, store)
-      }
+      openClaimRewardModal(event, store)
     })
     .on('click', '.js-claim-withdrawal', event => {
-      if (checkForTokenDefinition(store)) {
-        openClaimWithdrawalModal(event, store)
-      }
+      openClaimWithdrawalModal(event, store)
     })
     .on('click', '.js-stakes-btn-close-welcome-alert', event => {
       $(event.target).closest('section.container').hide()
@@ -459,7 +438,6 @@ async function reloadPoolList (msg, store) {
     type: 'RECEIVED_UPDATE',
     lastEpochNumber: msg.epoch_number,
     stakingAllowed: msg.staking_allowed,
-    stakingTokenDefined: msg.staking_token_defined,
     validatorSetApplyBlock: msg.validator_set_apply_block
   })
   await refreshPageWrapper(store)

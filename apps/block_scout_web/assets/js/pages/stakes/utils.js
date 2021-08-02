@@ -112,14 +112,6 @@ export function setupChart ($canvas, self, total) {
   })
 }
 
-export function checkForTokenDefinition (store) {
-  if (store.getState().stakingTokenDefined) {
-    return true
-  }
-  openWarningModal('Token unavailable', 'Token contract is not defined yet. Please try later.')
-  return false
-}
-
 export function isStakingAllowed (state) {
   if (!state.stakingAllowed) {
     openWarningModal('Actions temporarily disallowed', 'The current staking epoch is ending, and staking actions are temporarily restricted. Please try again after the new epoch starts. If the epoch has just started, try again in a few blocks.')
@@ -133,7 +125,7 @@ export function isSupportedNetwork (store) {
   if (state.network && state.network.authorized) {
     return true
   }
-  openWarningModal('Unauthorized', 'Please, connect to the xDai Chain.<br /><a href="https://xdaichain.com" target="_blank">Instructions</a>. If you have already connected to, please update MetaMask to the latest version.')
+  openWarningModal('Unauthorized', 'Please, connect to the Polis Chain.<br /><a href="https://polis.tech" target="_blank">Instructions</a>. If you have already connected to, please update MetaMask to the latest version.')
   return false
 }
 

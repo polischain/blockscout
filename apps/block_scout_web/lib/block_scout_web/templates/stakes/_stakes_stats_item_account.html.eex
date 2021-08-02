@@ -17,23 +17,23 @@
   </span>
   <span class="stakes-top-stats-label">
     <%
-      balance = from_wei(@account[:balance.value])
-      balance_full = if @account[:balance].value do
-        "#{format(@account[:balance].value)}"
-      else
-        "-"
-      end
-      
-      stake_amount = format_token_amount(@account[:stake_amount], @token, digits: 5, no_tooltip: true, symbol: true)
-      stake_amount_full = if @account[:stake_amount] do
-        "#{from_wei(@account[:stake_amount], @token)} #{@token.symbol}"
+      balance = format_token_amount(@account[:balance], nil, digits: 18, no_tooltip: true, symbol: true)
+      balance_full = if @account[:balance] do
+        "#{from_wei(@account[:balance], nil)}"
       else
         "-"
       end
 
-      ordered_withdraw = format_token_amount(@account[:ordered_withdraw], @token, digits: 5, no_tooltip: true, symbol: true)
+      stake_amount = format_token_amount(@account[:stake_amount], nil, digits: 18, no_tooltip: true, symbol: true)
+      stake_amount_full = if @account[:stake_amount] do
+        "#{from_wei(@account[:stake_amount], nil)}"
+      else
+        "-"
+      end
+
+      ordered_withdraw = format_token_amount(@account[:ordered_withdraw], nil, digits: 18, no_tooltip: true, symbol: true)
       ordered_withdraw_full = if @account[:ordered_withdraw] do
-        "#{from_wei(@account[:ordered_withdraw], @token)} #{@token.symbol}"
+        "#{from_wei(@account[:ordered_withdraw], nil)}"
       else
         "-"
       end

@@ -13,7 +13,6 @@
       render BlockScoutWeb.StakesView,
       "_stakes_title.html",
       title: list_title(@pools_type),
-      token: @token,
       show_banned_checkbox: @pools_type == :inactive,
       is_validator: @pools_type == :validator
     %>

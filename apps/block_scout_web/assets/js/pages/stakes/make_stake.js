@@ -53,7 +53,6 @@ export function openMakeStakeModal (event, store) {
 async function makeStake ($modal, address, store, msg) {
   const state = store.getState()
   const stakingContract = state.stakingContract
-  const tokenContract = state.tokenContract
   const validatorSetContract = state.validatorSetContract
   const decimals = state.tokenDecimals
 
@@ -73,8 +72,7 @@ async function makeStake ($modal, address, store, msg) {
     openErrorModal('This pool is banned', 'You cannot stake into a banned pool.')
     return
   }
-
-  makeContractCall(tokenContract.methods.transferAndCall(stakingContract.options.address, stake.toFixed(), address), store)
+  // TODO Make stake
 }
 
 function isDelegatorStakeValid (value, store, msg, address) {

@@ -7,7 +7,6 @@ defmodule BlockScoutWeb.StakesChannel do
   alias BlockScoutWeb.{StakesController, StakesHelpers, StakesView}
   alias Explorer.Chain
   alias Explorer.Chain.Cache.BlockNumber
-  alias Explorer.Chain.Token
   alias Explorer.Counters.AverageBlockTime
   alias Explorer.Staking.{ContractReader, ContractState}
   alias Phoenix.View
@@ -169,7 +168,7 @@ defmodule BlockScoutWeb.StakesChannel do
     html =
       View.render_to_string(StakesView, "_stakes_modal_become_candidate.html",
         min_candidate_stake: min_candidate_stake,
-        balance: balance,
+        balance: balance
       )
 
     result = %{
@@ -726,7 +725,7 @@ defmodule BlockScoutWeb.StakesChannel do
 
       push(socket, "claim_reward_recalculations", %{
         native_reward_sum:
-          StakesHelpers.format_token_amount(amounts.native_reward_sum, coin,
+          StakesHelpers.format_token_amount(amounts.native_reward_sum, nil,
             digits: 18,
             ellipsize: false,
             symbol: false
