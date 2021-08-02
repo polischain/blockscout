@@ -45,13 +45,13 @@
           render BlockScoutWeb.StakesView,
           "_stakes_pool_info_item.html",
           title: gettext("Candidate’s Staked Amount"),
-          value: format_token_amount(@validator.self_staked_amount, @token)
+          value: format_token_amount(@validator.self_staked_amount, nil)
         %>
         <%=
           render BlockScoutWeb.StakesView,
           "_stakes_pool_info_item.html",
           title: gettext("Delegators’ Staked Amount"),
-          value: format_token_amount(Decimal.sub(@validator.total_staked_amount, @validator.self_staked_amount), @token)
+          value: format_token_amount(Decimal.sub(@validator.total_staked_amount, @validator.self_staked_amount), nil)
         %>
         <%=
           render BlockScoutWeb.StakesView,

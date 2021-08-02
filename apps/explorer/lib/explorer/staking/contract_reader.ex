@@ -237,15 +237,8 @@ defmodule Explorer.Staking.ContractReader do
     case result do
       {:ok, response} ->
         response = String.replace_leading(response, "0x", "")
-
-        if String.length(response) != 64 * 2 do
-          {:error, "Invalid getRewardAmount response."}
-        else
-          {token_reward_sum, native_reward_sum} = String.split_at(response, 64)
-          token_reward_sum = String.to_integer(token_reward_sum, 16)
-          native_reward_sum = String.to_integer(native_reward_sum, 16)
-          {:ok, %{token_reward_sum: token_reward_sum, native_reward_sum: native_reward_sum}}
-        end
+        native_reward_sum = String.to_integer(response, 16)
+        {:ok, %{native_reward_sum: native_reward_sum}}
 
       {:error, reason} ->
         {:error, reason}

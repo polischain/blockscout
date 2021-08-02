@@ -4,17 +4,17 @@
       <%= render BlockScoutWeb.CommonComponentsView, "_modal_close_button.html" %>
       <div class="modal-stake-three-cols">
         <div class="modal-stake-left">
-          <%= render BlockScoutWeb.StakesView, "_stakes_progress.html", pool: @pool_from, pool_label: gettext("Source Pool"), token: @token, extra_class: "js-pool-from-progress" %>
+          <%= render BlockScoutWeb.StakesView, "_stakes_progress.html", pool: @pool_from, pool_label: gettext("Source Pool"), token: nil, extra_class: "js-pool-from-progress" %>
         </div>
         <div class="modal-header">
           <h5 class="modal-title"><%= gettext("Move Stake") %></h5>
         </div>
         <div class="modal-body">
           <form>
-            <%= render BlockScoutWeb.CommonComponentsView, "_input_group.html", id: "move-amount", classes: "form-group", input_classes: "form-control n-b-r", attributes: "move-amount", type: "text", placeholder: gettext("Amount"), prepend: @token.symbol, value: @amount %>
+            <%= render BlockScoutWeb.CommonComponentsView, "_input_group.html", id: "move-amount", classes: "form-group", input_classes: "form-control n-b-r", attributes: "move-amount", type: "text", placeholder: gettext("Amount"), prepend: "Polis", value: @amount %>
             <p class="form-p"><%= gettext("You Staked:") %>
               <span class="text-dark">
-                <%= format_token_amount(@delegator_from.stake_amount, @token) %>
+                <%= format_token_amount(@delegator_from.stake_amount, nil) %>
               </span>
             </p>
             <div class="input-group form-group">
@@ -35,18 +35,18 @@
             <%= if @delegator_to && Decimal.positive?(@delegator_to.stake_amount) do %>
               <p class="form-p m-b-0"><%= gettext("Current Stake:") %>
                 <span class="text-dark">
-                  <%= format_token_amount(@delegator_to.stake_amount, @token) %>
+                  <%= format_token_amount(@delegator_to.stake_amount, nil) %>
                 </span>
               </p>
             <% end %>
             <p class="form-p"><%= gettext("Max Amount to Move:") %>
               <%= if @pool_to && Decimal.positive?(@delegator_from.max_withdraw_allowed) do %>
-                <span class="text-dark link-dotted" data-available-amount="<%= from_wei(@delegator_from.max_withdraw_allowed, @token) %>">
-                  <%= format_token_amount(@delegator_from.max_withdraw_allowed, @token) %>
+                <span class="text-dark link-dotted" data-available-amount="<%= from_wei(@delegator_from.max_withdraw_allowed, nil) %>">
+                  <%= format_token_amount(@delegator_from.max_withdraw_allowed, nil) %>
                 </span>
               <% else %>
                 <span class="text-dark">
-                  <%= format_token_amount(@delegator_from.max_withdraw_allowed, @token) %>
+                  <%= format_token_amount(@delegator_from.max_withdraw_allowed, nil) %>
                 </span>
               <% end %>
             </p>
@@ -64,7 +64,7 @@
         <%= render BlockScoutWeb.CommonComponentsView, "_modal_bottom_disclaimer.html", text: gettext("Stake placed on a candidate pool or an active validator pool <strong>during the current staking epoch</strong> can be moved from one pool to another. Active stake cannot be moved. To re-delegate active stake: order a withdrawal, claim the amount on the next staking epoch, and stake the amount on a different pool.") |> raw(), extra_class: "b-b-l-0 #{if @pool_to do "b-b-r-0" end}" %>
         <%= if @pool_to do %>
           <div class="modal-stake-right">
-            <%= render BlockScoutWeb.StakesView, "_stakes_progress.html", pool: @pool_to, pool_label: gettext("Target Pool"), token: @token, extra_class: "js-pool-to-progress" %>
+            <%= render BlockScoutWeb.StakesView, "_stakes_progress.html", pool: @pool_to, pool_label: gettext("Target Pool"), token: nil, extra_class: "js-pool-to-progress" %>
           </div>
         <% end %>
       </div>

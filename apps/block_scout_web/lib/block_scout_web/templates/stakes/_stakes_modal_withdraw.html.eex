@@ -8,10 +8,10 @@
         </div>
         <div class="modal-body">
           <form>
-            <%= render BlockScoutWeb.CommonComponentsView, "_input_group.html", id: "amount", classes: "form-group", input_classes: "form-control n-b-r", attributes: "amount", type: "text", placeholder: gettext("Amount"), prepend: @token.symbol %>
+            <%= render BlockScoutWeb.CommonComponentsView, "_input_group.html", id: "amount", classes: "form-group", input_classes: "form-control n-b-r", attributes: "amount", type: "text", placeholder: gettext("Amount"), prepend: "Polis" %>
             <p class="form-p m-b-0"><%= gettext("You Staked:") %>
               <span class="text-dark">
-                <%= format_token_amount(@delegator.stake_amount, @token) %>
+                <%= format_token_amount(@delegator.stake_amount, nil) %>
               </span>
             </p>
 
@@ -26,28 +26,28 @@
             <%= if has_already_ordered do %>
               <p class="form-p m-b-0"><%= gettext("Already Ordered:") %>
                 <span class="text-dark">
-                  <%= format_token_amount(@delegator.ordered_withdraw, @token) %>
+                  <%= format_token_amount(@delegator.ordered_withdraw, nil) %>
                 </span>
               </p>
             <% end %>
             <%= if show_order_withdrawal do %>
               <div class="form-p m-b-0<%= if not withdraw_now_allowed, do: "-7" %>"><%= gettext("You Can Order:") %>
                 <%= if order_allowed do %>
-                  <span class="text-dark link-dotted" data-available-amount="<%= from_wei(@delegator.max_ordered_withdraw_allowed, @token) %>">
-                    <%= format_token_amount(@delegator.max_ordered_withdraw_allowed, @token) %>
+                  <span class="text-dark link-dotted" data-available-amount="<%= from_wei(@delegator.max_ordered_withdraw_allowed, nil) %>">
+                    <%= format_token_amount(@delegator.max_ordered_withdraw_allowed, nil) %>
                   </span>
                   <%= render BlockScoutWeb.CommonComponentsView, "_i_tooltip.html", text: gettext("The amount can be claimed after the current epoch finishes.") %>
                 <% else %>
                   <span class="text-dark">
-                    <%= format_token_amount(@delegator.max_ordered_withdraw_allowed, @token) %>
+                    <%= format_token_amount(@delegator.max_ordered_withdraw_allowed, nil) %>
                   </span>
                 <% end %>
               </div>
             <% end %>
             <%= if withdraw_now_allowed do %>
               <div class="form-p m-b-0-7"><%= gettext("Available Now:") %>
-                <span class="text-dark link-dotted" data-available-amount="<%= from_wei(@delegator.max_withdraw_allowed, @token) %>">
-                  <%= format_token_amount(@delegator.max_withdraw_allowed, @token) %>
+                <span class="text-dark link-dotted" data-available-amount="<%= from_wei(@delegator.max_withdraw_allowed, nil) %>">
+                  <%= format_token_amount(@delegator.max_withdraw_allowed, nil) %>
                 </span>
                 <%= render BlockScoutWeb.CommonComponentsView, "_i_tooltip.html", text: gettext("You can withdraw this amount right now.") %>
               </div>
@@ -78,7 +78,7 @@
         <p>If you have already ordered (and the staking window is still open), you may increase your current order by entering a positive value, or decrease your current order by entering a negative value in the box and clicking 'Order Withdrawal'. You must either keep the minimum stake amount in the pool, or order your entire stake for withdrawal.</p>
 ") |> raw(), extra_class: "b-b-r-0" %>
         <div class="modal-stake-right">
-          <%= render BlockScoutWeb.StakesView, "_stakes_progress.html", pool: @pool, token: @token %>
+          <%= render BlockScoutWeb.StakesView, "_stakes_progress.html", pool: @pool, token: nil %>
         </div>
       </div>
     </div>

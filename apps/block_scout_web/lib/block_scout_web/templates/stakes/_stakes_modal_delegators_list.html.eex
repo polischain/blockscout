@@ -38,7 +38,7 @@
                   end
 
                 tooltip =
-                  gettext("Amount of %{symbol} placed by an address.", symbol: @token.symbol) <>
+                  gettext("Amount of %{symbol} placed by an address.", symbol: "Polis") <>
                     if @show_snapshotted_data do
                       gettext(" Working Stake Amount is an amount which is accounted and working at the current staking epoch.")
                     else
@@ -71,16 +71,6 @@
                   tooltip: tooltip
               %>
             </div>
-            <%= if @pool.is_validator do %>
-              <div class="col-3">
-                <%=
-                  render BlockScoutWeb.StakesView,
-                    "_stakes_th.html",
-                    title: gettext("APY & Predicted Reward"),
-                    tooltip: gettext("Approximate Current Annual Percentage Yield. If you see N/A, please reopen the popup in a few blocks (APY cannot be calculated at the very beginning of a staking epoch). Predicted Reward is the amount of %{symbol} a participant will receive for staking and can claim once the current epoch ends.", symbol: @token.symbol)
-                %>
-              </div>
-            <% end %>
           </div>
           <div class="stakes-table-body">
             <%= for {staker, index} <- Enum.with_index(@stakers, 1) do %>
@@ -130,12 +120,12 @@
                   </div>
                 </div>
                 <div class="<%= if @pool.is_validator, do: "col-3", else: "col-4" %> stakes-td stakes-cell">
-                  <%= format_token_amount(staker.stake_amount, @token, symbol: false) %>
+                  <%= format_token_amount(staker.stake_amount, nil, symbol: false) %>
                   <%= if @show_snapshotted_data do %>
                     (
                       <%=
                         if staker.snapshotted_stake_amount do
-                          format_token_amount(staker.snapshotted_stake_amount, @token, symbol: false)
+                          format_token_amount(staker.snapshotted_stake_amount, nil, symbol: false)
                         else
                           0
                         end
@@ -179,7 +169,7 @@
                   <div class="col-3 stakes-td stakes-cell">
                     <%= cond do %>
                     <% staker.apy -> %>
-                      <%= staker.apy.apy %> (<%= format_token_amount(staker.apy.predicted_reward, @token, symbol: false, digits: 2) %>)
+                      <%= staker.apy.apy %> (<%= format_token_amount(staker.apy.predicted_reward, nil, symbol: false, digits: 2) %>)
                     <% @show_snapshotted_data and staker.snapshotted_stake_amount == nil -> %>
                       <%= gettext("Pending") %>
                     <% true -> %>
