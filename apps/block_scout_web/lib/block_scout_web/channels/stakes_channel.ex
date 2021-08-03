@@ -163,7 +163,7 @@ defmodule BlockScoutWeb.StakesChannel do
 
   def handle_in("render_become_candidate", _, socket) do
     min_candidate_stake = Decimal.new(ContractState.get(:min_candidate_stake))
-    balance = Chain.get_coin_balance(socket.assigns.account, BlockNumber.get_max())
+    balance = Chain.Wei.to(Chain.get_coin_balance(socket.assigns.account, BlockNumber.get_max()).value, :wei)
 
     html =
       View.render_to_string(StakesView, "_stakes_modal_become_candidate.html",
@@ -183,7 +183,7 @@ defmodule BlockScoutWeb.StakesChannel do
   def handle_in("render_make_stake", %{"address" => staking_address}, socket) do
     staking_pool = Chain.staking_pool(staking_address)
     delegator = Chain.staking_pool_delegator(staking_address, socket.assigns.account)
-    balance = Chain.get_coin_balance(socket.assigns.account, BlockNumber.get_max())
+    balance = Chain.Wei.to(Chain.get_coin_balance(socket.assigns.account, BlockNumber.get_max()).value, :wei)
 
     min_stake =
       Decimal.new(

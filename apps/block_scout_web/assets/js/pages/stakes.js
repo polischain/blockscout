@@ -117,9 +117,7 @@ export function reducer (state = initialState, action) {
       return Object.assign({}, state, {
         stakingContract: action.stakingContract,
         blockRewardContract: action.blockRewardContract,
-        validatorSetContract: action.validatorSetContract,
-        tokenDecimals: action.tokenDecimals,
-        tokenSymbol: action.tokenSymbol
+        validatorSetContract: action.validatorSetContract
       })
     }
     case 'FINISH_REQUEST': {
@@ -263,8 +261,7 @@ if ($stakesPage.length) {
       stakingContract,
       blockRewardContract,
       validatorSetContract,
-      tokenDecimals: parseInt(msg.token_decimals, 10),
-      tokenSymbol: msg.token_symbol
+      tokenSymbol: 'Polis'
     })
   })
 

@@ -106,8 +106,10 @@ async function becomeCandidate ($modal, store, msg) {
     const poolNameLength = web3.utils.stripHexPrefix(web3.utils.padLeft(web3.utils.numberToHex(poolNameHex.length / 2), 2, '0'))
     const poolDescriptionHex = web3.utils.stripHexPrefix(web3.utils.utf8ToHex(poolDescription))
     const poolDescriptionLength = web3.utils.stripHexPrefix(web3.utils.padLeft(web3.utils.numberToHex(poolDescriptionHex.length / 2), 4, '0'))
-    // TODO Make candidate
-    makeContractCall(stakingContract.methods.addPool(stake.toFixed(), `${miningAddress}01${poolNameLength}${poolNameHex}${poolDescriptionLength}${poolDescriptionHex}`), store)
+
+    const call = stakingContract.methods.addPool(stake.toFixed(), `${miningAddress}01${poolNameLength}${poolNameHex}${poolDescriptionLength}${poolDescriptionHex}`)
+
+    makeContractCall(call, store, stake.toFixed())
   } catch (err) {
     openErrorModal('Error', err.message)
   }

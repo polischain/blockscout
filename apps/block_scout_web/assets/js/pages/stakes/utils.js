@@ -5,7 +5,7 @@ import { openErrorModal, openSuccessModal, openWarningModal } from '../../lib/mo
 Chart.defaults.font.family = 'Nunito, "Helvetica Neue", Arial, sans-serif,"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
 Chart.register(ArcElement, DoughnutController)
 
-export async function makeContractCall (call, store, gasLimit, callbackFunc) {
+export async function makeContractCall (call, store, gasLimit, callbackFunc, value) {
   const state = store.getState()
   const from = state.account
   const web3 = state.web3
@@ -41,6 +41,7 @@ export async function makeContractCall (call, store, gasLimit, callbackFunc) {
 
   call.send({
     from,
+    value,
     gasPrice,
     gas: Math.ceil(gasLimit * 1.2) // +20% reserve to ensure enough gas
   }, async function (error, txHash) {

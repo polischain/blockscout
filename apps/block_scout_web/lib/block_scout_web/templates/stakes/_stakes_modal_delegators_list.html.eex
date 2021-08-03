@@ -165,18 +165,6 @@
                     -
                   <% end %>
                 </div>
-                <%= if @pool.is_validator do %>
-                  <div class="col-3 stakes-td stakes-cell">
-                    <%= cond do %>
-                    <% staker.apy -> %>
-                      <%= staker.apy.apy %> (<%= format_token_amount(staker.apy.predicted_reward, nil, symbol: false, digits: 2) %>)
-                    <% @show_snapshotted_data and staker.snapshotted_stake_amount == nil -> %>
-                      <%= gettext("Pending") %>
-                    <% true -> %>
-                      <%= gettext("N/A") %>
-                    <% end %>
-                  </div>
-                <% end %>
               </div>
             <% end %>
           </div>
