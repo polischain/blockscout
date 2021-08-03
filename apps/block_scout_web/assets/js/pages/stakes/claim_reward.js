@@ -114,7 +114,6 @@ function onPoolsFound ($modal, $modalBody, channel, store) {
     if (status === 'recalculation' || status === 'claiming') return false
 
     const data = $('option:selected', $poolsDropdown).data()
-    const tokenRewardSum = data.tokenRewardSum ? data.tokenRewardSum : '0'
     const nativeRewardSum = data.nativeRewardSum ? data.nativeRewardSum : '0'
     const gasLimit = data.gasLimit ? data.gasLimit : '0'
     const $poolInfo = $('.selected-pool-info', $modalBody)
@@ -124,7 +123,6 @@ function onPoolsFound ($modal, $modalBody, channel, store) {
 
     $poolsDropdown.blur()
     $('textarea', $poolInfo).val(epochs)
-    $('#token-reward-sum', $poolInfo).text(tokenRewardSum).data('default', tokenRewardSum)
     $('#native-reward-sum', $poolInfo).text(nativeRewardSum).data('default', nativeRewardSum)
     $('#tx-gas-limit', $poolInfo).text('~' + gasLimit).data('default', gasLimit)
     $('#epoch-choice-all', $poolInfo).click()
@@ -275,7 +273,6 @@ function showButton (type, $modalBody, calculations) {
   const $recalculateButton = $('button.recalculate', $modalBody)
   const $submitButton = $('button.submit', $modalBody)
 
-  const $tokenRewardSum = $('#token-reward-sum', $modalBody)
   const $nativeRewardSum = $('#native-reward-sum', $modalBody)
   const $gasLimit = $('#tx-gas-limit', $modalBody)
 
@@ -283,17 +280,15 @@ function showButton (type, $modalBody, calculations) {
     $recalculateButton.addClass('hidden')
     $submitButton.removeClass('hidden')
 
-    const tokenRewardSum = !calculations ? $tokenRewardSum.data('default') : calculations.token_reward_sum
     const nativeRewardSum = !calculations ? $nativeRewardSum.data('default') : calculations.native_reward_sum
     const gasLimit = !calculations ? $gasLimit.data('default') : calculations.gas_limit
 
-    $tokenRewardSum.text(tokenRewardSum).css('text-decoration', '')
     $nativeRewardSum.text(nativeRewardSum).css('text-decoration', '')
     $gasLimit.text('~' + gasLimit).css('text-decoration', '')
   } else {
     $recalculateButton.removeClass('hidden')
     $submitButton.addClass('hidden');
-    [$tokenRewardSum, $nativeRewardSum, $gasLimit].forEach(
+    [$nativeRewardSum, $gasLimit].forEach(
       $item => $item.css('text-decoration', 'line-through')
     )
   }

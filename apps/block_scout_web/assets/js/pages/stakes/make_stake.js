@@ -2,7 +2,7 @@ import $ from 'jquery'
 import { BigNumber } from 'bignumber.js'
 import { openErrorModal, openModal, openWarningModal, lockModal } from '../../lib/modals'
 import { setupValidation } from '../../lib/validation'
-import { makeContractCall, setupChart, isSupportedNetwork, isStakingAllowed } from './utils'
+import { setupChart, isSupportedNetwork, isStakingAllowed, makeContractCall } from './utils'
 import constants from './constants'
 
 export function openMakeStakeModal (event, store) {
@@ -72,9 +72,13 @@ async function makeStake ($modal, address, store, msg) {
     openErrorModal('This pool is banned', 'You cannot stake into a banned pool.')
     return
   }
-
   const call = stakingContract.methods.stake(address, stake.toFixed())
-  makeContractCall(call, store, stake.toFixed())
+  const gasLimit = await call.estimateGas({
+    from: state.account,
+    value: stake.toFixed(),
+    gasPrice: 1000000000
+  })
+  makeContractCall(call, store, gasLimit, null, stake.toFixed())
 }
 
 function isDelegatorStakeValid (value, store, msg, address) {

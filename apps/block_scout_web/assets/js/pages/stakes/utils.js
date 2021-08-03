@@ -5,7 +5,7 @@ import { openErrorModal, openSuccessModal, openWarningModal } from '../../lib/mo
 Chart.defaults.font.family = 'Nunito, "Helvetica Neue", Arial, sans-serif,"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
 Chart.register(ArcElement, DoughnutController)
 
-export async function makeContractCall (call, store, gasLimit, callbackFunc, value) {
+export async function makeContractCall (call, store, gasLimit, callbackFunc, sendAmount) {
   const state = store.getState()
   const from = state.account
   const web3 = state.web3
@@ -27,7 +27,7 @@ export async function makeContractCall (call, store, gasLimit, callbackFunc, val
     return callbackFunc('Web3 is undefined. Please, contact support.')
   }
 
-  const gasPrice = web3.utils.toWei('20', 'gwei')
+  const gasPrice = web3.utils.toWei('1', 'gwei')
 
   if (!gasLimit) {
     try {
@@ -39,12 +39,7 @@ export async function makeContractCall (call, store, gasLimit, callbackFunc, val
     }
   }
 
-  call.send({
-    from,
-    value,
-    gasPrice,
-    gas: Math.ceil(gasLimit * 1.2) // +20% reserve to ensure enough gas
-  }, async function (error, txHash) {
+  const callback = async function (error, txHash) {
     if (error) {
       let errorMessage = 'Your transaction wasn\'t processed, please try again in a few blocks.'
       if (error.message) {
@@ -58,7 +53,7 @@ export async function makeContractCall (call, store, gasLimit, callbackFunc, val
       try {
         let tx
         let currentBlockNumber
-        const maxWaitBlocks = 6
+        const maxWaitBlocks = 3
         const startBlockNumber = (await web3.eth.getBlockNumber()) - 0
         const finishBlockNumber = startBlockNumber + maxWaitBlocks
         do {
@@ -80,7 +75,22 @@ export async function makeContractCall (call, store, gasLimit, callbackFunc, val
         callbackFunc(e.message)
       }
     }
-  })
+  }
+
+  if (sendAmount) {
+    call.send({
+      from,
+      gasPrice,
+      value: sendAmount,
+      gas: Math.ceil(gasLimit * 1.2) // +20% reserve to ensure enough gas
+    }, callback)
+  } else {
+    call.send({
+      from,
+      gasPrice,
+      gas: Math.ceil(gasLimit * 1.2) // +20% reserve to ensure enough gas
+    }, callback)
+  }
 }
 
 export function setupChart ($canvas, self, total) {

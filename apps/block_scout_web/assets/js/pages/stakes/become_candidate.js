@@ -2,7 +2,7 @@ import $ from 'jquery'
 import { BigNumber } from 'bignumber.js'
 import { openModal, openErrorModal, openWarningModal, lockModal } from '../../lib/modals'
 import { setupValidation, displayInputError } from '../../lib/validation'
-import { makeContractCall, isSupportedNetwork, isStakingAllowed } from './utils'
+import { isSupportedNetwork, isStakingAllowed, makeContractCall } from './utils'
 import constants from './constants'
 
 let status = 'modalClosed'
@@ -108,8 +108,12 @@ async function becomeCandidate ($modal, store, msg) {
     const poolDescriptionLength = web3.utils.stripHexPrefix(web3.utils.padLeft(web3.utils.numberToHex(poolDescriptionHex.length / 2), 4, '0'))
 
     const call = stakingContract.methods.addPool(stake.toFixed(), `${miningAddress}01${poolNameLength}${poolNameHex}${poolDescriptionLength}${poolDescriptionHex}`)
-
-    makeContractCall(call, store, stake.toFixed())
+    const gasLimit = await call.estimateGas({
+      from: state.account,
+      value: stake.toFixed(),
+      gasPrice: 1000000000
+    })
+    makeContractCall(call, store, gasLimit, null, stake.toFixed())
   } catch (err) {
     openErrorModal('Error', err.message)
   }
