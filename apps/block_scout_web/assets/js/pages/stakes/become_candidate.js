@@ -103,11 +103,9 @@ async function becomeCandidate ($modal, store, msg) {
     lockModal($modal)
 
     const poolNameHex = web3.utils.stripHexPrefix(web3.utils.utf8ToHex(poolName))
-    const poolNameLength = web3.utils.stripHexPrefix(web3.utils.padLeft(web3.utils.numberToHex(poolNameHex.length / 2), 2, '0'))
     const poolDescriptionHex = web3.utils.stripHexPrefix(web3.utils.utf8ToHex(poolDescription))
-    const poolDescriptionLength = web3.utils.stripHexPrefix(web3.utils.padLeft(web3.utils.numberToHex(poolDescriptionHex.length / 2), 4, '0'))
 
-    const call = stakingContract.methods.addPool(stake.toFixed(), `${miningAddress}01${poolNameLength}${poolNameHex}${poolDescriptionLength}${poolDescriptionHex}`)
+    const call = stakingContract.methods.addPool(stake.toFixed(), miningAddress, poolNameHex, poolDescriptionHex)
     const gasLimit = await call.estimateGas({
       from: state.account,
       value: stake.toFixed(),
