@@ -23,8 +23,6 @@ ADD apps/indexer/mix.exs ./apps/indexer/
 
 RUN mix do deps.get, local.rebar --force, deps.compile
 
-ADD docker .
-
 ARG COIN
 RUN if [ "$COIN" != "" ]; then\
     lineNum="$(grep -n 'msgid \"Ether\"' apps/block_scout_web/priv/gettext/default.pot | head -n 1 | cut -d: -f1)";\
