@@ -23,7 +23,7 @@ ADD apps/indexer/mix.exs ./apps/indexer/
 
 RUN mix do deps.get, local.rebar --force, deps.compile
 
-ADD . .
+ADD docker .
 
 ARG COIN
 RUN if [ "$COIN" != "" ]; then\
