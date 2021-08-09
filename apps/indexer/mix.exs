@@ -1,10 +1,11 @@
 defmodule Indexer.MixProject do
   use Mix.Project
 
+  @app :indexer
   def project do
     [
       aliases: aliases(),
-      app: :indexer,
+      app: @app,
       build_path: "../../_build",
       config_path: "../../config/config.exs",
       deps: deps(),
@@ -14,7 +15,8 @@ defmodule Indexer.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       lockfile: "../../mix.lock",
       start_permanent: Mix.env() == :prod,
-      version: "0.1.0"
+      version: "0.1.0",
+      releases: [{@app, release()}],
     ]
   end
 
@@ -61,4 +63,15 @@ defmodule Indexer.MixProject do
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["test/support" | elixirc_paths(:dev)]
   defp elixirc_paths(_), do: ["lib"]
+
+  defp release do
+    [
+      overwrite: true,
+      cookie: "#{@app}_cookie",
+      quiet: true,
+      steps: [:assemble, &Bakeware.assemble/1],
+      strip_beams: Mix.env() == :prod
+    ]
+  end
+  
 end

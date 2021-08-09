@@ -1,10 +1,12 @@
 defmodule BlockScoutWeb.Mixfile do
   use Mix.Project
 
+  @app :block_scout_web
+
   def project do
     [
       aliases: aliases(),
-      app: :block_scout_web,
+      app: @app,
       build_path: "../../_build",
       config_path: "../../config/config.exs",
       compilers: [:phoenix, :gettext | Mix.compilers()],
@@ -24,7 +26,8 @@ defmodule BlockScoutWeb.Mixfile do
         dialyzer: :test
       ],
       start_permanent: Mix.env() == :prod,
-      version: "0.0.1"
+      version: "0.0.1",
+      releases: [{@app, release()}],
     ]
   end
 
@@ -157,4 +160,15 @@ defmodule BlockScoutWeb.Mixfile do
       links: %{"GitHub" => "https://github.com/blockscout/blockscout"}
     ]
   end
+
+  defp release do
+    [
+      overwrite: true,
+      cookie: "#{@app}_cookie",
+      quiet: true,
+      steps: [:assemble, &Bakeware.assemble/1],
+      strip_beams: Mix.env() == :prod
+    ]
+  end
+
 end

@@ -1,10 +1,12 @@
 defmodule EthereumJsonrpc.MixProject do
   use Mix.Project
 
+  @app :ethereum_jsonrpc
+
   def project do
     [
       aliases: aliases(Mix.env()),
-      app: :ethereum_jsonrpc,
+      app: @app,
       build_path: "../../_build",
       config_path: "../../config/config.exs",
       deps: deps(),
@@ -23,7 +25,8 @@ defmodule EthereumJsonrpc.MixProject do
         dialyzer: :test
       ],
       start_permanent: Mix.env() == :prod,
-      version: "0.1.0"
+      version: "0.1.0",
+      releases: [{@app, release()}],
     ]
   end
 
@@ -88,4 +91,15 @@ defmodule EthereumJsonrpc.MixProject do
       {:poolboy, "~> 1.5.2"}
     ]
   end
+
+  defp release do
+    [
+      overwrite: true,
+      cookie: "#{@app}_cookie",
+      quiet: true,
+      steps: [:assemble, &Bakeware.assemble/1],
+      strip_beams: Mix.env() == :prod
+    ]
+  end
+
 end

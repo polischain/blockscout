@@ -23,9 +23,6 @@ defmodule BlockScout.Mixfile do
       start_permanent: Mix.env() == :prod,
       releases: [
         blockscout: [
-          steps: [:assemble, &Bakeware.assemble/1],
-          strip_beams: Mix.env() == :prod,
-          overwrite: true,
           applications: [
             block_scout_web: :permanent,
             ethereum_jsonrpc: :permanent,
@@ -53,9 +50,6 @@ defmodule BlockScout.Mixfile do
 
   defp env_aliases(_env) do
     [
-      assets: ["cmd cd apps/block_scout_web/assets/ && npm install && npm run deploy && cd - && cd apps/explorer/ && npm install && cd -"],
-      release: ["phx.digest", "release"],
-      setup: ["deps.get, local.rebar --force, deps.compile"],
       compile: "compile --warnings-as-errors"
     ]
   end
@@ -74,12 +68,12 @@ defmodule BlockScout.Mixfile do
   # and cannot be accessed from applications inside the apps folder
   defp deps do
     [
+      {:bakeware, path: "./bakeware", runtime: false},
       {:absinthe_plug, git: "https://github.com/blockscout/absinthe_plug.git", tag: "1.5.3", override: true},
       {:tesla, "~> 1.3.3"},
       # Documentation
       {:ex_doc, "~> 0.24.2", only: :dev, runtime: false},
       {:number, "~> 1.0.3"},
-      {:bakeware, path: "./bakeware", runtime: false}
 ]
   end
 end

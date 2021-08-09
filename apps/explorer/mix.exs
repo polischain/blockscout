@@ -1,10 +1,12 @@
 defmodule Explorer.Mixfile do
   use Mix.Project
 
+  @app :explorer
+
   def project do
     [
       aliases: aliases(Mix.env()),
-      app: :explorer,
+      app: @app,
       build_path: "../../_build",
       config_path: "../../config/config.exs",
       deps: deps(),
@@ -24,7 +26,8 @@ defmodule Explorer.Mixfile do
         dialyzer: :test
       ],
       start_permanent: Mix.env() == :prod,
-      version: "0.0.1"
+      version: "0.0.1",
+      releases: [{@app, release()}],
     ]
   end
 
@@ -139,4 +142,15 @@ defmodule Explorer.Mixfile do
       links: %{"GitHub" => "https://github.com/blockscout/blockscout"}
     ]
   end
+
+  defp release do
+    [
+      overwrite: true,
+      cookie: "#{@app}_cookie",
+      quiet: true,
+      steps: [:assemble, &Bakeware.assemble/1],
+      strip_beams: Mix.env() == :prod
+    ]
+  end
+
 end
