@@ -953,7 +953,7 @@ msgstr ""
 #: lib/block_scout_web/templates/transaction/_pending_tile.html.eex:20
 #: lib/block_scout_web/templates/transaction/_tile.html.eex:37
 #: lib/block_scout_web/views/wei_helpers.ex:78
-msgid "Ether"
+msgid "Polis"
 msgstr ""
 
 #, elixir-format
@@ -2821,7 +2821,7 @@ msgstr ""
 
 #, elixir-format
 #: lib/block_scout_web/templates/transaction/overview.html.eex:317
-msgid "Cost per unit of gas specified for the transaction, in Ether and Gwei. The higher the gas price the higher chance of getting included in a block."
+msgid "Cost per unit of gas specified for the transaction, in Polis and Gwei. The higher the gas price the higher chance of getting included in a block."
 msgstr ""
 
 #, elixir-format
@@ -2921,7 +2921,7 @@ msgstr ""
 
 #, elixir-format
 #: lib/block_scout_web/templates/transaction/overview.html.eex:286
-msgid "The value being transacted in Ether and fiat value. Note: You can click the fiat value (if available) to see historical value at the time of transaction."
+msgid "The value being transacted in Polis and fiat value. Note: You can click the fiat value (if available) to see historical value at the time of transaction."
 msgstr ""
 
 #, elixir-format
