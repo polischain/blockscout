@@ -1,0 +1,3 @@
+[submodule "bakeware"]
+	path = bakeware
+	url = https://github.com/bake-bake-bake/bakeware
