@@ -73,5 +73,5 @@ defmodule Indexer.MixProject do
       strip_beams: Mix.env() == :prod
     ]
   end
-  
+
 end

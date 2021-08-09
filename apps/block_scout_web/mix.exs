@@ -140,6 +140,7 @@ defmodule BlockScoutWeb.Mixfile do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
+      release: ["release"],
       compile: "compile --warnings-as-errors",
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
