@@ -23,6 +23,9 @@ defmodule BlockScout.Mixfile do
       start_permanent: Mix.env() == :prod,
       releases: [
         blockscout: [
+          steps: [:assemble, &Bakeware.assemble/1],
+          strip_beams: Mix.env() == :prod,
+          overwrite: true,
           applications: [
             block_scout_web: :permanent,
             ethereum_jsonrpc: :permanent,
