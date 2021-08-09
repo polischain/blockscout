@@ -57,6 +57,7 @@ defmodule BlockScoutWeb.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:bakeware, path: "../../bakeware", runtime: false},
       # GraphQL toolkit
       {:absinthe, "~> 1.5"},
       # Integrates Absinthe subscriptions with Phoenix
