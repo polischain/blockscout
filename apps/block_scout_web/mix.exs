@@ -1,12 +1,10 @@
 defmodule BlockScoutWeb.Mixfile do
   use Mix.Project
 
-  @app :block_scout_web
-
   def project do
     [
       aliases: aliases(),
-      app: @app,
+      app: :block_scout_web,
       build_path: "../../_build",
       config_path: "../../config/config.exs",
       compilers: [:phoenix, :gettext | Mix.compilers()],
@@ -26,8 +24,7 @@ defmodule BlockScoutWeb.Mixfile do
         dialyzer: :test
       ],
       start_permanent: Mix.env() == :prod,
-      version: "0.0.1",
-      releases: [{@app, release()}],
+      version: "0.0.1"
     ]
   end
 
@@ -57,7 +54,6 @@ defmodule BlockScoutWeb.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bakeware, path: "../../bakeware", runtime: false},
       # GraphQL toolkit
       {:absinthe, "~> 1.5"},
       # Integrates Absinthe subscriptions with Phoenix
@@ -141,7 +137,6 @@ defmodule BlockScoutWeb.Mixfile do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      release: "release",
       compile: "compile --warnings-as-errors",
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
@@ -162,15 +157,4 @@ defmodule BlockScoutWeb.Mixfile do
       links: %{"GitHub" => "https://github.com/blockscout/blockscout"}
     ]
   end
-
-  defp release do
-    [
-      overwrite: true,
-      cookie: "#{@app}_cookie",
-      quiet: true,
-      steps: [:assemble, &Bakeware.assemble/1],
-      strip_beams: Mix.env() == :prod
-    ]
-  end
-
 end

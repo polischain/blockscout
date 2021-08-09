@@ -50,8 +50,6 @@ defmodule BlockScout.Mixfile do
 
   defp env_aliases(_env) do
     [
-      assets: ["cmd npm install --prefix apps/block_scout_web/assets", "cmd npm build --prefix apps/block_scout_web/assets", "cmd npm install --prefix apps/explorer"],
-      release: ["assets", "phx.digest", "release"],
       compile: "compile --warnings-as-errors"
     ]
   end
@@ -74,7 +72,7 @@ defmodule BlockScout.Mixfile do
       {:tesla, "~> 1.3.3"},
       # Documentation
       {:ex_doc, "~> 0.24.2", only: :dev, runtime: false},
-      {:number, "~> 1.0.3"},
-]
+      {:number, "~> 1.0.3"}
+    ]
   end
 end

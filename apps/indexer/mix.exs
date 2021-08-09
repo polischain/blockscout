@@ -1,11 +1,10 @@
 defmodule Indexer.MixProject do
   use Mix.Project
 
-  @app :indexer
   def project do
     [
       aliases: aliases(),
-      app: @app,
+      app: :indexer,
       build_path: "../../_build",
       config_path: "../../config/config.exs",
       deps: deps(),
@@ -15,8 +14,7 @@ defmodule Indexer.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       lockfile: "../../mix.lock",
       start_permanent: Mix.env() == :prod,
-      version: "0.1.0",
-      releases: [{@app, release()}],
+      version: "0.1.0"
     ]
   end
 
@@ -32,15 +30,13 @@ defmodule Indexer.MixProject do
     [
       # so that the supervision tree does not start, which would begin indexing, and so that the various fetchers can
       # be started with `ExUnit`'s `start_supervised` for unit testing.
-      test: "test --no-start",
-      release: "release"
+      test: "test --no-start"
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:bakeware, path: "../../bakeware", runtime: false},
       # Optional dependency of `:spandex` for `Spandex.Decorators`
       {:decorator, "~> 1.2"},
       # JSONRPC access to Parity for `Explorer.Indexer`
@@ -65,15 +61,4 @@ defmodule Indexer.MixProject do
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["test/support" | elixirc_paths(:dev)]
   defp elixirc_paths(_), do: ["lib"]
-
-  defp release do
-    [
-      overwrite: true,
-      cookie: "#{@app}_cookie",
-      quiet: true,
-      steps: [:assemble, &Bakeware.assemble/1],
-      strip_beams: Mix.env() == :prod
-    ]
-  end
-
 end

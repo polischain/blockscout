@@ -1,12 +1,10 @@
 defmodule EthereumJsonrpc.MixProject do
   use Mix.Project
 
-  @app :ethereum_jsonrpc
-
   def project do
     [
       aliases: aliases(Mix.env()),
-      app: @app,
+      app: :ethereum_jsonrpc,
       build_path: "../../_build",
       config_path: "../../config/config.exs",
       deps: deps(),
@@ -25,8 +23,7 @@ defmodule EthereumJsonrpc.MixProject do
         dialyzer: :test
       ],
       start_permanent: Mix.env() == :prod,
-      version: "0.1.0",
-      releases: [{@app, release()}],
+      version: "0.1.0"
     ]
   end
 
@@ -52,15 +49,11 @@ defmodule EthereumJsonrpc.MixProject do
 
   defp env_aliases(:dev), do: []
 
-  defp env_aliases(_env), do: [
-    release: "release",
-    compile: "compile --warnings-as-errors"
-  ]
+  defp env_aliases(_env), do: [compile: "compile --warnings-as-errors"]
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:bakeware, path: "../../bakeware", runtime: false},
       # CACerts bundle for `EthereumJSONRPC.WebSocket.WebSocketClient`
       {:certifi, "~> 2.3"},
       # WebSocket-server for testing `EthereumJSONRPC.WebSocket.WebSocketClient`.
@@ -95,15 +88,4 @@ defmodule EthereumJsonrpc.MixProject do
       {:poolboy, "~> 1.5.2"}
     ]
   end
-
-  defp release do
-    [
-      overwrite: true,
-      cookie: "#{@app}_cookie",
-      quiet: true,
-      steps: [:assemble, &Bakeware.assemble/1],
-      strip_beams: Mix.env() == :prod
-    ]
-  end
-
 end

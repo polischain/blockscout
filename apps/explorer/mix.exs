@@ -1,12 +1,10 @@
 defmodule Explorer.Mixfile do
   use Mix.Project
 
-  @app :explorer
-
   def project do
     [
       aliases: aliases(Mix.env()),
-      app: @app,
+      app: :explorer,
       build_path: "../../_build",
       config_path: "../../config/config.exs",
       deps: deps(),
@@ -26,8 +24,7 @@ defmodule Explorer.Mixfile do
         dialyzer: :test
       ],
       start_permanent: Mix.env() == :prod,
-      version: "0.0.1",
-      releases: [{@app, release()}],
+      version: "0.0.1"
     ]
   end
 
@@ -59,7 +56,6 @@ defmodule Explorer.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bakeware, path: "../../bakeware", runtime: false},
       {:bcrypt_elixir, "~> 1.0"},
       # benchmark optimizations
       {:benchee, "~> 0.13.1", only: :test},
@@ -133,10 +129,7 @@ defmodule Explorer.Mixfile do
   defp env_aliases(:dev), do: []
 
   defp env_aliases(_env) do
-    [
-      release: "release",
-      compile: "compile --warnings-as-errors"
-    ]
+    [compile: "compile --warnings-as-errors"]
   end
 
   defp package do
@@ -146,15 +139,4 @@ defmodule Explorer.Mixfile do
       links: %{"GitHub" => "https://github.com/blockscout/blockscout"}
     ]
   end
-
-  defp release do
-    [
-      overwrite: true,
-      cookie: "#{@app}_cookie",
-      quiet: true,
-      steps: [:assemble, &Bakeware.assemble/1],
-      strip_beams: Mix.env() == :prod
-    ]
-  end
-
 end
