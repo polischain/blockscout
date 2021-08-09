@@ -50,6 +50,7 @@ defmodule BlockScout.Mixfile do
 
   defp env_aliases(_env) do
     [
+
       compile: "compile --warnings-as-errors"
     ]
   end
