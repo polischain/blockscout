@@ -32,13 +32,15 @@ defmodule Indexer.MixProject do
     [
       # so that the supervision tree does not start, which would begin indexing, and so that the various fetchers can
       # be started with `ExUnit`'s `start_supervised` for unit testing.
-      test: "test --no-start"
+      test: "test --no-start",
+      release: "release"
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:bakeware, path: "../../bakeware", runtime: false},
       # Optional dependency of `:spandex` for `Spandex.Decorators`
       {:decorator, "~> 1.2"},
       # JSONRPC access to Parity for `Explorer.Indexer`

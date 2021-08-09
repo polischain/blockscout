@@ -50,6 +50,8 @@ defmodule BlockScout.Mixfile do
 
   defp env_aliases(_env) do
     [
+      assets: ["cmd npm install --prefix apps/block_scout_web/assets", "cmd npm build --prefix apps/block_scout_web/assets", "cmd npm install --prefix apps/explorer"],
+      release: ["assets", "phx.digest", "release"],
       compile: "compile --warnings-as-errors"
     ]
   end

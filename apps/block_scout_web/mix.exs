@@ -141,8 +141,7 @@ defmodule BlockScoutWeb.Mixfile do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      assets: ["cmd npm install --prefix assets", "cmd npm build --prefix assets"],
-      release: ["assets", "phx.digest", "release"],
+      release: "release",
       compile: "compile --warnings-as-errors",
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],

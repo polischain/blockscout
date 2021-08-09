@@ -52,11 +52,15 @@ defmodule EthereumJsonrpc.MixProject do
 
   defp env_aliases(:dev), do: []
 
-  defp env_aliases(_env), do: [compile: "compile --warnings-as-errors"]
+  defp env_aliases(_env), do: [
+    release: "release",
+    compile: "compile --warnings-as-errors"
+  ]
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:bakeware, path: "../../bakeware", runtime: false},
       # CACerts bundle for `EthereumJSONRPC.WebSocket.WebSocketClient`
       {:certifi, "~> 2.3"},
       # WebSocket-server for testing `EthereumJSONRPC.WebSocket.WebSocketClient`.

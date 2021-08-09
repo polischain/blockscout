@@ -59,6 +59,7 @@ defmodule Explorer.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:bakeware, path: "../../bakeware", runtime: false},
       {:bcrypt_elixir, "~> 1.0"},
       # benchmark optimizations
       {:benchee, "~> 0.13.1", only: :test},
@@ -132,7 +133,10 @@ defmodule Explorer.Mixfile do
   defp env_aliases(:dev), do: []
 
   defp env_aliases(_env) do
-    [compile: "compile --warnings-as-errors"]
+    [
+      release: "release",
+      compile: "compile --warnings-as-errors"
+    ]
   end
 
   defp package do
