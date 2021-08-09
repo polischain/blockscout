@@ -53,8 +53,7 @@ defmodule BlockScout.Mixfile do
 
   defp env_aliases(_env) do
     [
-      assets: ["cmd npm run deploy --prefix assets"],
-      release: ["assets", "phx.digest", "release"],
+      release: ["phx.digest", "release"],
       setup: ["deps.get", "cmd npm install --prefix assets"],
       compile: "compile --warnings-as-errors"
     ]
