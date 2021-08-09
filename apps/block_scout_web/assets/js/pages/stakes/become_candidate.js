@@ -76,7 +76,6 @@ export function becomeCandidateConnectionLost () {
 
 async function becomeCandidate ($modal, store, msg) {
   const state = store.getState()
-  const web3 = state.web3
   const stakingContract = state.stakingContract
   const decimals = state.tokenDecimals
   const stake = new BigNumber($modal.find('[candidate-stake]').val().replace(',', '.').trim()).shiftedBy(decimals).integerValue()
@@ -102,10 +101,7 @@ async function becomeCandidate ($modal, store, msg) {
 
     lockModal($modal)
 
-    const poolNameHex = web3.utils.stripHexPrefix(web3.utils.utf8ToHex(poolName))
-    const poolDescriptionHex = web3.utils.stripHexPrefix(web3.utils.utf8ToHex(poolDescription))
-
-    const call = stakingContract.methods.addPool(stake.toFixed(), miningAddress, poolNameHex, poolDescriptionHex)
+    const call = stakingContract.methods.addPool(stake.toFixed(), miningAddress, poolName, poolDescription)
     const gasLimit = await call.estimateGas({
       from: state.account,
       value: stake.toFixed(),
