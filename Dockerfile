@@ -25,13 +25,6 @@ RUN mix do deps.get, local.rebar --force, deps.compile
 
 ADD . .
 
-RUN lineNum="$(grep -n 'msgid \"Ether\"' apps/block_scout_web/priv/gettext/default.pot | head -n 1 | cut -d: -f1)";\
-    lineToChange=`expr $lineNum + 1`;\
-    sed -i "${lineToChange}s/msgstr \"\"/msgstr \"Polis\"/" apps/block_scout_web/priv/gettext/default.pot;\
-    lineNum="$(grep -n 'msgid \"Ether\"' apps/block_scout_web/priv/gettext/en/LC_MESSAGES/default.po | head -n 1 | cut -d: -f1)";\
-    lineToChange=`expr $lineNum + 1`;\
-    sed -i "${lineToChange}s/msgstr \"\"/msgstr \"Polis\"/" apps/block_scout_web/priv/gettext/en/LC_MESSAGES/default.po;
-
 # Run forderground build and phoenix digest
 RUN mix compile
 
