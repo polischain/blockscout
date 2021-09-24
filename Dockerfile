@@ -1,4 +1,4 @@
-FROM bitwalker/alpine-elixir-phoenix:1.11.4
+FROM bitwalker/alpine-elixir-phoenix:1.12.2
 
 RUN apk --no-cache --update add alpine-sdk gmp-dev automake libtool inotify-tools autoconf python3 file
 
@@ -27,6 +27,8 @@ ADD . .
 
 # Run forderground build and phoenix digest
 RUN mix compile
+
+RUN npm install npm@latest
 
 # Add blockscout npm deps
 RUN cd apps/block_scout_web/assets/ && \
