@@ -756,7 +756,11 @@ defmodule Explorer.Chain do
         select:
           sum(
             fragment(
-              "Case When ? < ? Then ? Else ? End",
+              "CASE 
+                WHEN ? = 0 THEN 0
+                WHEN ? < ? THEN ?
+                ELSE ? END",
+              tx.max_fee_per_gas,
               tx.max_fee_per_gas - ^base_fee_per_gas,
               tx.max_priority_fee_per_gas,
               (tx.max_fee_per_gas - ^base_fee_per_gas) * tx.gas_used,
@@ -3665,6 +3669,7 @@ defmodule Explorer.Chain do
       from(
         tx in Transaction,
         where: tx.created_contract_address_hash == ^address_hash,
+        where: tx.status == ^1,
         select: tx.input
       )
 
