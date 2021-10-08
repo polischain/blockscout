@@ -119,11 +119,12 @@ function onPoolsFound ($modal, $modalBody, channel, store) {
     const $poolInfo = $('.selected-pool-info', $modalBody)
     const epochs = data.epochs ? data.epochs.toString() : ''
 
+    const nativeRewardSumFinal = parseFloat(nativeRewardSum) * 0.8
     allowedEpochs = expandEpochsToArray(epochs)
 
     $poolsDropdown.blur()
     $('textarea', $poolInfo).val(epochs)
-    $('#native-reward-sum', $poolInfo).text(nativeRewardSum).data('default', nativeRewardSum)
+    $('#native-reward-sum', $poolInfo).text(nativeRewardSumFinal.toString(2)).data('default', nativeRewardSumFinal.toString(2))
     $('#tx-gas-limit', $poolInfo).text('~' + gasLimit).data('default', gasLimit)
     $('#epoch-choice-all', $poolInfo).click()
     $specifiedEpochsText.val('')
