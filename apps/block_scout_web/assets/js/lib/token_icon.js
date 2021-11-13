@@ -1,18 +1,5 @@
 function getTokenIconUrl (chainID, addressHash) {
-  var chainName = null
-  switch (chainID) {
-    case '333999':
-      chainName = 'olympus'
-      break
-    default:
-      chainName = null
-      break
-  }
-  if (chainName) {
-    return `https://raw.githubusercontent.com/hadeswap/assets/master/blockchains/${chainName}/assets/${addressHash}/logo.png`
-  } else {
-    return null
-  }
+  return `https://raw.githubusercontent.com/hadeswap/assets/master/blockchains/olympus/assets/${addressHash}/logo.png`
 }
 
 function appendTokenIcon ($tokenIconContainer, chainID, addressHash, foreignChainID, foreignAddressHash, displayTokenIcons, size) {
