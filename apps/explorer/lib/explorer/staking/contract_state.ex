@@ -105,9 +105,14 @@ defmodule Explorer.Staking.ContractState do
     block_reward_contract_signature = "56b54bae"
 
     %{"56b54bae" => {:ok, [block_reward_contract_address]}} =
-      Reader.query_contract(validator_set_contract_address, validator_set_abi, %{
-        "#{block_reward_contract_signature}" => []
-      })
+      Reader.query_contract(
+        validator_set_contract_address,
+        validator_set_abi,
+        %{
+          "#{block_reward_contract_signature}" => []
+        },
+        false
+      )
 
     state = %__MODULE__{
       eth_blocknumber_pull_interval: eth_blocknumber_pull_interval,
