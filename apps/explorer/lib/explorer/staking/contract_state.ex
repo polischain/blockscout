@@ -97,9 +97,14 @@ defmodule Explorer.Staking.ContractState do
     %{
       "dfc8bf4e" => {:ok, [validator_set_contract_address]}
     } =
-      Reader.query_contract(staking_contract_address, staking_abi, %{
-        "#{validator_set_contract_signature}" => []
-      })
+      Reader.query_contract(
+        staking_contract_address,
+        staking_abi,
+        %{
+          "#{validator_set_contract_signature}" => []
+        },
+        false
+      )
 
     # 56b54bae = keccak256(blockRewardContract())
     block_reward_contract_signature = "56b54bae"
